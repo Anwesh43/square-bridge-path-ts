@@ -1,6 +1,7 @@
 const w : number = window.innerWidth 
 const h : number = window.innerHeight 
-const scGap : number = 0.02 
+const parts : number = 3
+const scGap : number = 0.02 / parts
 const strokeFactor : number = 90 
 const sizeFactor : number = 5.9 
 const delay : number = 20 
@@ -12,7 +13,6 @@ const colors : Array<string> = [
     "#FFEB3B"
 ]
 const backColor : string = "#BDBDBD"
-const parts : number = 3 
 
 class ScaleUtil {
 
@@ -32,6 +32,9 @@ class ScaleUtil {
 class DrawingUtil {
 
     static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number)  {
+        if (x1 == x2 && y1 == y2) {
+            return
+        }
         context.beginPath()
         context.moveTo(x1, y1)
         context.lineTo(x2, y2)
@@ -49,8 +52,15 @@ class DrawingUtil {
         for (var j = 0; j < 2; j++) {
             context.save()
             context.scale(1 - 2 * j, 1)
-            DrawingUtil.drawLine(context, 0, 0, -w * 0.5 * sf1, 0)
-            context.fillRect(-size * sf2 + w * 0.5 * (sf3 - 1), -size / 2, size * sf2, size)
+            context.fillRect(size * (1 - sf2) + w * 0.5 * (sf3 - 1) , -size / 2, size * sf2, size)
+            
+            for (var i = 0; i < 2; i++) {
+                context.save()
+                context.translate(0, -size / 2 + size * i)
+                DrawingUtil.drawLine(context, 0, 0, -w * 0.5 * sf1, 0)
+                context.restore()
+            }
+            
             context.restore()
         }
         context.restore()
