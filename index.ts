@@ -12,6 +12,7 @@ const colors : Array<string> = [
     "#FFEB3B"
 ]
 const backColor : string = "#BDBDBD"
+const parts : number = 3 
 
 class ScaleUtil {
 
@@ -25,5 +26,41 @@ class ScaleUtil {
 
     static sinify(scale : number) : number {
         return Math.sin(scale * Math.PI)
+    }
+}
+
+class DrawingUtil {
+
+    static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number)  {
+        context.beginPath()
+        context.moveTo(x1, y1)
+        context.lineTo(x2, y2)
+        context.stroke()    
+    }
+
+    static drawSquareBridge(context : CanvasRenderingContext2D, scale : number) {
+        const size : number = Math.min(w, h) / sizeFactor 
+        const sf : number = ScaleUtil.sinify(scale)
+        const sf1 : number = ScaleUtil.divideScale(sf, 0, parts)
+        const sf2 : number = ScaleUtil.divideScale(sf, 1, parts)
+        const sf3 : number = ScaleUtil.divideScale(sf, 2, parts)
+        context.save()
+        context.translate(w / 2, h / 2)
+        for (var j = 0; j < 2; j++) {
+            context.save()
+            context.scale(1 - 2 * j, 1)
+            DrawingUtil.drawLine(context, 0, 0, -w * 0.5 * sf1, 0)
+            context.fillRect(-size * sf2 + w * 0.5 * (sf3 - 1), -size / 2, size * sf2, size)
+            context.restore()
+        }
+        context.restore()
+    }
+
+    static drawSBNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(w, h) / strokeFactor 
+        context.strokeStyle = colors[i]
+        context.fillStyle = colors[i]
+        DrawingUtil.drawSquareBridge(context, scale)
     }
 }
