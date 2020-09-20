@@ -204,3 +204,25 @@ class SquareBridge {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    sb : SquareBridge = new SquareBridge()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.sb.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.sb.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.sb.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
